@@ -1,0 +1,102 @@
+root ::= exp
+
+exp ::= bool |
+    integer |
+    float |
+    string |
+    variable |
+    "()" |
+    "[]" |
+    "?" |
+    constructor |
+    constructor-call |
+    parenthesized-exp |
+    cons-exp |
+    tuple-exp |
+    list-exp |
+    unary-exp |
+    binary-exp |
+    function-application |
+    let-exp |
+    if-exp |
+    case-exp |
+    exp-sequence |
+    test-exp |
+    type-alias
+
+constructor-application ::= constructor "(" exp ")"
+parenthesized-exp ::= "(" exp ")"
+cons-exp ::= exp "::" exp
+tuple-exp ::= exp ("," exp)+
+list-exp ::= "[" exp ("," exp)* "]"
+unary-exp ::= unary-op exp
+binary-exp ::= exp binary-op exp
+function-application ::= exp"("exp")"
+let-exp ::= "let " pat (":" typ)? "=" exp " in " exp
+if-exp ::= "if " exp " then " exp " else " exp
+case-exp ::= "case " exp ("|" pat "=>" exp)+ " end"
+exp-sequence ::= exp ";" exp
+test-exp ::= "test " exp " end"
+type-alias ::= "type " type-variable "=" typ " in " exp
+
+
+type-variable ::= [A-Z][A-Za-z0-9_]*
+constructor ::= [A-Z][A-Za-z0-9_]*
+variable ::= [a-z][A-Za-z0-9_]*
+bool ::= "true" | "false"
+integer ::= [0-9_]*
+float ::= [0-9]* "." [0-9]*
+string ::= "\"" [^"]* "\""
+
+
+unary-op ::= "-" | "!"
+binary-op-int ::= "+" | "-" | "*" | "/" | "<" | ">" | "<=" | ">=" | "==" | "!="
+binary-op-float ::= "+." | "-." | "*." | "/." | "<." | ">." | "<=." | ">=." | "==." | "!=."
+binary-op-string ::= "$==" | "@"
+binary-op ::= binary-op-int | binary-op-float | binary-op-string
+
+pat ::=
+    bool |
+    integer |
+    float |
+    string |
+    variable |
+    "()" |
+    "[]" |
+    "?" |
+    constructor |
+    pat-constructor-application |
+    parenthesized-pat |
+    cons-pat |
+    tuple-pat |
+    list-pat |
+    "_" |
+    pat-type-ascription
+
+pat-constructor-application ::= constructor "(" pat ")"
+parenthesized-pat ::= "(" pat ")"
+cons-pat ::= pat "::" pat
+tuple-pat ::= pat ("," pat)+
+list-pat ::= "[" pat ("," pat)* "]"
+pat-type-ascription ::= pat ":" typ
+
+typ ::=
+    "Unit" |
+    "Int" |
+    "Float" |
+    "Bool" |
+    "String" |
+    type-variable |
+    typ-constructor-def ("+" typ-constructor-def)+ |
+    "?" |
+    parenthesized-typ |
+    list-typ |
+    arrow-typ |
+    tuple-typ
+
+parenthesized-typ ::= "(" typ ")"
+list-typ ::= "[" typ "]"
+arrow-typ ::= typ "->" typ
+tuple-typ ::= typ ("," typ)+
+
+typ-constructor-def ::= constructor | constructor "(" typ ")"

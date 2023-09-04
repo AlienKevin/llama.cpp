@@ -1,6 +1,22 @@
 root ::= exp
 
-exp ::= bool |
+### Expressions
+
+exp ::= sequence-exp
+
+sequence-exp ::= tuple-exp (";" tuple-exp)*
+
+tuple-exp ::= cons-exp ("," cons-exp)*
+
+cons-exp ::= binary-exp ("::" binary-exp)*
+
+binary-exp ::= unary-exp (binary-op unary-exp)*
+
+unary-exp ::= unary-op* function-app-exp
+
+function-app-exp ::= primary-exp ("(" exp ")")*
+
+primary-exp ::= bool |
     integer |
     float |
     string |
@@ -9,36 +25,23 @@ exp ::= bool |
     "[]" |
     "?" |
     constructor |
-    constructor-call |
+    constructor-app |
     parenthesized-exp |
-    cons-exp |
-    tuple-exp |
     list-exp |
-    unary-exp |
-    binary-exp |
-    function-application |
     let-exp |
     if-exp |
     case-exp |
-    exp-sequence |
     test-exp |
     type-alias
 
-constructor-application ::= constructor "(" exp ")"
+constructor-app ::= constructor "(" exp ")"
 parenthesized-exp ::= "(" exp ")"
-cons-exp ::= exp "::" exp
-tuple-exp ::= exp ("," exp)+
 list-exp ::= "[" exp ("," exp)* "]"
-unary-exp ::= unary-op exp
-binary-exp ::= exp binary-op exp
-function-application ::= exp"("exp")"
 let-exp ::= "let " pat (":" typ)? "=" exp " in " exp
 if-exp ::= "if " exp " then " exp " else " exp
 case-exp ::= "case " exp ("|" pat "=>" exp)+ " end"
-exp-sequence ::= exp ";" exp
 test-exp ::= "test " exp " end"
 type-alias ::= "type " type-variable "=" typ " in " exp
-
 
 type-variable ::= [A-Z][A-Za-z0-9_]*
 constructor ::= [A-Z][A-Za-z0-9_]*
@@ -48,14 +51,23 @@ integer ::= [0-9_]*
 float ::= [0-9]* "." [0-9]*
 string ::= "\"" [^"]* "\""
 
-
 unary-op ::= "-" | "!"
 binary-op-int ::= "+" | "-" | "*" | "/" | "<" | ">" | "<=" | ">=" | "==" | "!="
 binary-op-float ::= "+." | "-." | "*." | "/." | "<." | ">." | "<=." | ">=." | "==." | "!=."
 binary-op-string ::= "$==" | "@"
 binary-op ::= binary-op-int | binary-op-float | binary-op-string
 
-pat ::=
+### Patterns
+
+pat ::= type-ascription-pat
+
+type-ascription-pat ::= tuple-pat (":" typ)*
+
+tuple-pat ::= cons-pat ("," cons-pat)*
+
+cons-pat ::= primary-pat ("::" primary-pat)*
+
+primary-pat ::=
     bool |
     integer |
     float |
@@ -64,39 +76,36 @@ pat ::=
     "()" |
     "[]" |
     "?" |
-    constructor |
-    pat-constructor-application |
-    parenthesized-pat |
-    cons-pat |
-    tuple-pat |
-    list-pat |
     "_" |
-    pat-type-ascription
+    constructor |
+    constructor-app-pat |
+    parenthesized-pat |
+    list-pat
 
-pat-constructor-application ::= constructor "(" pat ")"
+constructor-app-pat ::= constructor "(" pat ")"
 parenthesized-pat ::= "(" pat ")"
-cons-pat ::= pat "::" pat
-tuple-pat ::= pat ("," pat)+
 list-pat ::= "[" pat ("," pat)* "]"
-pat-type-ascription ::= pat ":" typ
 
-typ ::=
+### Types
+
+typ ::= arrow-typ
+
+arrow-typ ::= tuple-typ ("->" tuple-typ)*
+
+tuple-typ ::= primary-typ ("," primary-typ)*
+
+primary-typ ::=
     "Unit" |
     "Int" |
     "Float" |
     "Bool" |
     "String" |
     type-variable |
-    typ-constructor-def ("+" typ-constructor-def)+ |
+    constructor-def ("+" constructor-def)+ |
     "?" |
     parenthesized-typ |
-    list-typ |
-    arrow-typ |
-    tuple-typ
+    list-typ
 
 parenthesized-typ ::= "(" typ ")"
 list-typ ::= "[" typ "]"
-arrow-typ ::= typ "->" typ
-tuple-typ ::= typ ("," typ)+
-
-typ-constructor-def ::= constructor | constructor "(" typ ")"
+constructor-def ::= constructor | constructor "(" typ ")"

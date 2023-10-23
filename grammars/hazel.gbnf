@@ -1,16 +1,18 @@
 root ::= exp
 
+ws ::= [ \t\n]+
+
 ### Expressions
 
 exp ::= sequence-exp
 
-sequence-exp ::= tuple-exp (";" tuple-exp)*
+sequence-exp ::= tuple-exp (";" ws tuple-exp)*
 
-tuple-exp ::= cons-exp ("," cons-exp)*
+tuple-exp ::= cons-exp ("," ws cons-exp)*
 
 cons-exp ::= binary-exp ("::" binary-exp)*
 
-binary-exp ::= unary-exp (binary-op unary-exp)*
+binary-exp ::= unary-exp (ws binary-op ws unary-exp)*
 
 unary-exp ::= unary-op* function-app-exp
 
@@ -36,12 +38,12 @@ primary-exp ::= bool |
 
 constructor-app ::= constructor "(" exp ")"
 parenthesized-exp ::= "(" exp ")"
-list-exp ::= "[" exp ("," exp)* "]"
-let-exp ::= "let " pat (":" typ)? "=" exp " in " exp
-if-exp ::= "if " exp " then " exp " else " exp
-case-exp ::= "case " exp ("|" pat "=>" exp)+ " end"
-test-exp ::= "test " exp " end"
-type-alias ::= "type " type-variable "=" typ " in " exp
+list-exp ::= "[" exp ("," ws exp)* "]"
+let-exp ::= "let" ws pat (":" ws typ)? ws "=" ws exp ws "in" ws exp
+if-exp ::= "if" ws exp ws "then" ws exp ws "else" ws exp
+case-exp ::= "case" ws exp (ws "|" ws pat ws "=>" ws exp)+ ws "end"
+test-exp ::= "test" ws exp ws "end"
+type-alias ::= "type" ws type-variable ws "=" ws typ ws "in" ws exp
 
 type-variable ::= [A-Z][A-Za-z0-9_]*
 constructor ::= [A-Z][A-Za-z0-9_]*
@@ -61,9 +63,9 @@ binary-op ::= binary-op-int | binary-op-float | binary-op-string
 
 pat ::= type-ascription-pat
 
-type-ascription-pat ::= tuple-pat (":" typ)*
+type-ascription-pat ::= tuple-pat (":" ws typ)*
 
-tuple-pat ::= cons-pat ("," cons-pat)*
+tuple-pat ::= cons-pat ("," ws cons-pat)*
 
 cons-pat ::= primary-pat ("::" primary-pat)*
 
@@ -84,15 +86,15 @@ primary-pat ::=
 
 constructor-app-pat ::= constructor "(" pat ")"
 parenthesized-pat ::= "(" pat ")"
-list-pat ::= "[" pat ("," pat)* "]"
+list-pat ::= "[" pat ("," ws pat)* "]"
 
 ### Types
 
 typ ::= arrow-typ
 
-arrow-typ ::= tuple-typ ("->" tuple-typ)*
+arrow-typ ::= tuple-typ (ws "->" ws tuple-typ)*
 
-tuple-typ ::= primary-typ ("," primary-typ)*
+tuple-typ ::= primary-typ ("," ws primary-typ)*
 
 primary-typ ::=
     "Unit" |
@@ -101,7 +103,7 @@ primary-typ ::=
     "Bool" |
     "String" |
     type-variable |
-    constructor-def ("+" constructor-def)+ |
+    constructor-def (ws "+" ws constructor-def)+ |
     "?" |
     parenthesized-typ |
     list-typ
